@@ -13,13 +13,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
  * @author leonardobork
  */
-@RestController("/blockchain")
+@RestController()
 public class NodeController {
     
     @Autowired BlockService blockService;
@@ -32,7 +33,7 @@ public class NodeController {
     }
     
     @PostMapping("/mine")
-    public void mineBlock(String blockData){
+    public void mineBlock(@RequestBody String blockData){
         this.nodeService.mineBlock(blockData);
     }
     

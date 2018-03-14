@@ -23,11 +23,7 @@ public class BlockService {
 
     @Autowired LogService logService;
     
-    private static List<Block> BLOCKCHAIN = new ArrayList<Block>() {
-        {
-            generateGenesisBlock();
-        }
-    };
+    private static List<Block> BLOCKCHAIN = new ArrayList<Block>();
     
     public List<Block> getBlockchain(){
         return BLOCKCHAIN;
@@ -49,8 +45,8 @@ public class BlockService {
         return new Block(nextIndex, previousBlock.getPreviousHash(), nextDateTime, blockData, nextHash);
     }
 
-    public static Block generateGenesisBlock() {
-        return new Block(0, "0", LocalDateTime.now(), "my genesis block!!", "816534932c2b7154836da6afc367695e6337db8a921823784c14378abed4f7d7");
+    public static void generateGenesisBlock() {
+         BLOCKCHAIN.add(new Block(0, "0", LocalDateTime.now(), "my genesis block!!", "816534932c2b7154836da6afc367695e6337db8a921823784c14378abed4f7d7"));
     }
 
     public String calculateHash(Integer index, String previousHash, String timestamp, String data) {
