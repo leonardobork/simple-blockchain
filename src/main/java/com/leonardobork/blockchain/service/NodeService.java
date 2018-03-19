@@ -21,6 +21,7 @@ public class NodeService {
 
     @Autowired BlockService blockService;
     @Autowired LogService logService;
+    @Autowired NetworkService networkService;
     
     public void mineBlock(String blockData){
         Block newBlock = blockService.generateNextBlock(blockData);
@@ -28,15 +29,15 @@ public class NodeService {
         this.logService.write("New block added, index number: " + newBlock.getIndex());
     }
     
-    public void handleBlockchain(List<Block> blockchain, String identifier) throws Exception{
+    public void handleBlockchain(List<Block> blockchain) throws Exception{
         Block latestBlockReceived = blockchain.get(blockchain.size() - 1);
         Block latestBlockHeld = this.blockService.getLatestBlock();
         if(latestBlockReceived.getIndex() > latestBlockHeld.getIndex()){
-            this.logService.write("Blockchain possibly behind. We have " + latestBlockHeld.getIndex() + ", peer " + identifier + " has " + latestBlockReceived.getIndex());
+            this.logService.write("Blockchain possibly behind. We have " + latestBlockHeld.getIndex() + ", peer has "+ latestBlockReceived.getIndex());
             if(latestBlockReceived.getHash().equals(latestBlockHeld.getPreviousHash())){
-                this.logService.equals("Blockchain from " + identifier + " is possible to append.");
+                this.logService.write("Blockchain is possible to append.");
                 this.blockService.addBlock(latestBlockReceived);
-//                this.networkService.broadcast();
+                this.networkService.broadcast(this.blockService.getBlockchain());
             } else {
                 this.blockService.replaceChain((ArrayList<Block>) blockchain);
             }
