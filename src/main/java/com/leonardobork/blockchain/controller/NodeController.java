@@ -6,8 +6,8 @@
 package com.leonardobork.blockchain.controller;
 
 import com.leonardobork.blockchain.domain.Block;
+import com.leonardobork.blockchain.dto.BlockchainDTO;
 import com.leonardobork.blockchain.service.BlockService;
-import com.leonardobork.blockchain.service.LogService;
 import com.leonardobork.blockchain.service.NodeService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,6 @@ public class NodeController {
     
     @Autowired BlockService blockService;
     @Autowired NodeService nodeService;
-    @Autowired LogService logService;
     
     @GetMapping("/blocks")
     public List<Block> getBlockchain(){
@@ -37,8 +36,9 @@ public class NodeController {
         this.nodeService.mineBlock(blockData);
     }
     
-    @GetMapping("/log")
-    public String getLog(){
-        return this.logService.getLog();
+    @PostMapping("/send")
+    public void sendBlockchain(@RequestBody BlockchainDTO data) throws Exception{
+       this.nodeService.handleBlockchain(data.getBlockchain(), data.getIdentifier());
     }
+    
 }

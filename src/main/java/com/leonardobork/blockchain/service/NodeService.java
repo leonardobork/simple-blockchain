@@ -6,6 +6,9 @@
 package com.leonardobork.blockchain.service;
 
 import com.leonardobork.blockchain.domain.Block;
+import com.leonardobork.blockchain.exception.InvalidBlockchainException;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +20,29 @@ import org.springframework.stereotype.Service;
 public class NodeService {
 
     @Autowired BlockService blockService;
+    @Autowired LogService logService;
     
     public void mineBlock(String blockData){
         Block newBlock = blockService.generateNextBlock(blockData);
         blockService.addBlock(newBlock);
-        System.out.println("New block added, index number: " + newBlock.getIndex());
+        this.logService.write("New block added, index number: " + newBlock.getIndex());
+    }
+    
+    public void handleBlockchain(List<Block> blockchain, String identifier) throws Exception{
+        Block latestBlockReceived = blockchain.get(blockchain.size() - 1);
+        Block latestBlockHeld = this.blockService.getLatestBlock();
+        if(latestBlockReceived.getIndex() > latestBlockHeld.getIndex()){
+            this.logService.write("Blockchain possibly behind. We have " + latestBlockHeld.getIndex() + ", peer " + identifier + " has " + latestBlockReceived.getIndex());
+            if(latestBlockReceived.getHash().equals(latestBlockHeld.getPreviousHash())){
+                this.logService.equals("Blockchain from " + identifier + " is possible to append.");
+                this.blockService.addBlock(latestBlockReceived);
+//                this.networkService.broadcast();
+            } else {
+                this.blockService.replaceChain((ArrayList<Block>) blockchain);
+            }
+        } else {
+            this.logService.write("Received blockchain is not longer than current blockchain. Do nothing");
+            throw new InvalidBlockchainException("Received blockchain is not longer than current blockchain. Do nothing");
+        }
     }
 }

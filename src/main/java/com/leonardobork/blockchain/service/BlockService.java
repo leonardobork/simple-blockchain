@@ -7,6 +7,7 @@ package com.leonardobork.blockchain.service;
 
 import com.google.common.hash.Hashing;
 import com.leonardobork.blockchain.domain.Block;
+import com.leonardobork.blockchain.exception.InvalidBlockchainException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -75,10 +76,11 @@ public class BlockService {
     }
 
     public boolean isValidChain(ArrayList<Block> receivedBlockchain) {
-        if (!receivedBlockchain.get(0).equals(BLOCKCHAIN)) {
+        if (!(receivedBlockchain.get(0).getData().equals(BLOCKCHAIN.get(0).getData()) && receivedBlockchain.get(0).getHash().equals(BLOCKCHAIN.get(0).getHash()))) {
             return false;
         }
-        ArrayList<Block> tempBlockchain = receivedBlockchain;
+        ArrayList<Block> tempBlockchain = new ArrayList<Block>();
+        tempBlockchain.add(receivedBlockchain.get(0));
         for (int i = 1; i < receivedBlockchain.size(); i++) {
             if (this.blockIsValid(receivedBlockchain.get(i), tempBlockchain.get(i - 1))) {
                 tempBlockchain.add(receivedBlockchain.get(i));
@@ -92,15 +94,14 @@ public class BlockService {
 
 //    There should always be only one explicit set of blocks in the chain at a given time.
 //    In case of conflicts (e.g. two nodes both generate block number 72) we choose the chain that has the longest number of blocks.
-    public boolean replaceChain(ArrayList<Block> newBlockchain) {
+    public void replaceChain(ArrayList<Block> newBlockchain) throws InvalidBlockchainException {
         if (isValidChain(newBlockchain) && newBlockchain.size() > BLOCKCHAIN.size()) {
             this.logService.write("Received blockchain is valid, updating current blockchain. \n Last index is: "
                     + newBlockchain.get(newBlockchain.size() - 1).getIndex() + "\n");
             BLOCKCHAIN = newBlockchain;
-            return true;
         } else {
             this.logService.write("Received blockchain is invalid, will not replace.");
-            return false;
+            throw new InvalidBlockchainException("Received blockchain is invalid, will not replace.");
         }
     }
 }
