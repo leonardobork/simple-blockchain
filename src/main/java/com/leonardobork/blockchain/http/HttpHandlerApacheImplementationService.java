@@ -53,6 +53,7 @@ public class HttpHandlerApacheImplementationService implements HttpHandler {
         post.setHeader("Content-Type", "application/json");
         StringEntity params = new StringEntity(content, "UTF-8");
         post.setEntity(params);
+            System.out.println(post);
             HttpResponse response = httpClient.execute(post);
             return response.getStatusLine().getStatusCode();         
         } catch (Exception e) {

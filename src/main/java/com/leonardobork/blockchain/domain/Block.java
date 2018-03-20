@@ -5,6 +5,7 @@
  */
 package com.leonardobork.blockchain.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class Block {
     
     private Integer index;
     private String previousHash;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime timestamp;
     private String data;
     private String hash;

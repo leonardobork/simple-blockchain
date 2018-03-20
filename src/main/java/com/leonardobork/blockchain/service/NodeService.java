@@ -27,6 +27,7 @@ public class NodeService {
         Block newBlock = blockService.generateNextBlock(blockData);
         blockService.addBlock(newBlock);
         this.logService.write("New block added, index number: " + newBlock.getIndex());
+        this.networkService.broadcast(this.blockService.getBlockchain());
     }
     
     public void handleBlockchain(List<Block> blockchain) throws Exception{

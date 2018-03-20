@@ -43,7 +43,7 @@ public class NodeController {
     }
     
     @PostMapping("/peer")
-    public void addPeer(String peer){
+    public void addPeer(@RequestBody String peer){
         this.networkService.addPeer(peer);
     }
 }
